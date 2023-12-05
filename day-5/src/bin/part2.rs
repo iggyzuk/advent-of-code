@@ -1,5 +1,6 @@
-use std::{collections::BTreeMap, ops::Range};
+use std::ops::Range;
 
+use indicatif::ProgressBar;
 use nom::{
     branch::alt,
     bytes::complete::tag,
@@ -9,6 +10,7 @@ use nom::{
     sequence::{delimited, pair},
     IResult,
 };
+use rayon::iter::{IntoParallelIterator, ParallelIterator};
 
 #[derive(Debug)]
 struct Data {
@@ -61,20 +63,37 @@ impl Data {
             })
             .collect::<Vec<_>>();
 
-        // find min location
-        let mut min_location = u32::MAX;
-        for seed_range in seed_ranges {
-            for seed in seed_range {
-                let mut value = seed;
-                for map in &ordered_maps {
-                    value = map.remap(value)
-                }
+        // count all seeds so we could optimize progress bar with skips
+        let progress_seeds: u64 = seed_ranges.len() as u64
+            + seed_ranges
+                .iter()
+                .fold(0, |count, seed_range| count + seed_range.len() as u64);
 
-                if value < min_location {
-                    min_location = value;
+        // report progress 100 (or less) times over all seeds
+        let progress_skips: u64 = if progress_seeds > 100 {
+            progress_seeds / 100
+        } else {
+            progress_seeds
+        };
+
+        let pb = ProgressBar::new(progress_seeds);
+
+        // find the mind location using parallel iterator
+        let min_location = seed_ranges
+            .into_par_iter()
+            .flat_map(|range| range.into_iter())
+            .map(|seed| {
+                if seed as u64 % progress_skips == 0 {
+                    pb.inc(progress_skips);
                 }
-            }
-        }
+                let x = ordered_maps
+                    .iter()
+                    .fold(seed, |acc, ord_map| ord_map.remap(acc));
+                x
+            })
+            .min()
+            .unwrap();
+
         min_location
     }
 }
