@@ -18,7 +18,7 @@ fn process(input: &str) -> u32 {
 mod tests {
     use super::*;
     #[test]
-    fn day4_part1() {
+    fn day1_part1() {
         let input = "";
         assert_eq!(process(input), 4361);
     }

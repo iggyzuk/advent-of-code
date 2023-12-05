@@ -6,3 +6,4 @@ members = ["day-*"]
 [workspace.dependencies]
 log = "0.4.20"
 simple_logger = "4.3.0"
+nom = "7.1.3"
