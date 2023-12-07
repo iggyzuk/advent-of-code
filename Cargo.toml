@@ -1,9 +1,11 @@
 [workspace]
 resolver = "2"
 
-members = ["day-*"]
+members = ["*/day-*"]
 
 [workspace.dependencies]
 log = "0.4.20"
 simple_logger = "4.3.0"
 nom = "7.1.3"
+indicatif = { version = "0.17.7", features = ["rayon"] }
+rayon = "1.8.0"

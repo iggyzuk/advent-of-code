@@ -1,6 +1,6 @@
 # Advent of Code 2023
 
-`cargo run -p day-1 --bin part1`
+`cargo run -p day-1-2023 --bin part1`
 `cargo test`
 
 ```rust
@@ -18,9 +18,9 @@ fn process(input: &str) -> u32 {
 mod tests {
     use super::*;
     #[test]
-    fn day1_part1() {
+    fn day1_2023_part1() {
         let input = "";
-        assert_eq!(process(input), 4361);
+        assert_eq!(process(input), 123);
     }
 }
 ```
