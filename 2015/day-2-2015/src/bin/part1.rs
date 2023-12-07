@@ -1,5 +1,7 @@
 use nom::{
-    bytes::complete::tag, character::complete::newline, multi::separated_list1, sequence::tuple,
+    character::complete::newline,
+    multi::separated_list1,
+    sequence::{terminated, tuple},
     IResult,
 };
 
@@ -41,9 +43,11 @@ fn parse(input: &str) -> IResult<&str, Vec<Cube>> {
 
 /// 29x13x26
 fn parse_cube(input: &str) -> IResult<&str, Cube> {
+    use nom::character::complete::char;
     use nom::character::complete::u32;
 
-    let (input, (length, _, width, _, height)) = tuple((u32, tag("x"), u32, tag("x"), u32))(input)?;
+    let (input, (length, width, height)) =
+        tuple((terminated(u32, char('x')), terminated(u32, char('x')), u32))(input)?;
 
     Ok((
         input,
