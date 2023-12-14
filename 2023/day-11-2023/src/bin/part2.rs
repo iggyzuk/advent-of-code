@@ -185,9 +185,6 @@ fn galaxies_in_expand_space(map: Map<Node>, galaxy_expansion: usize) -> Vec<Cell
         }
     }
 
-    let expand_width = map.width as usize + expand_cols.len();
-    let expand_height = map.height as usize + expand_rows.len();
-
     let mut galaxies = vec![];
 
     // 10 times needs to turn into x9, while 1 needs to stay 1
@@ -196,11 +193,11 @@ fn galaxies_in_expand_space(map: Map<Node>, galaxy_expansion: usize) -> Vec<Cell
     let mut ex = 0;
     let mut ey = 0;
 
-    for y in 0..expand_height {
+    for y in 0..map.height {
         if expand_rows.contains(&y) {
             ey += step;
         }
-        for x in 0..expand_width {
+        for x in 0..map.width {
             if expand_cols.contains(&x) {
                 ex += step;
             }

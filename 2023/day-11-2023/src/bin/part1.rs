@@ -226,11 +226,11 @@ fn expand_space(map: Map<Node>) -> Map<Node> {
     let mut ex = 0;
     let mut ey = 0;
 
-    for y in 0..map_expand_height {
+    for y in 0..map.height {
         if expand_rows.contains(&y) {
             ey += 1;
         }
-        for x in 0..map_expand_width {
+        for x in 0..map.width {
             if expand_cols.contains(&x) {
                 ex += 1;
             }
