@@ -138,7 +138,7 @@ fn process(input: &str) -> usize {
     println!("------------- galaxies ({}) -------------", galaxies.len());
     println!();
 
-    find_galaxies(&map)
+    galaxies
         .iter()
         .map(|n| n.cell)
         .for_each(|p| println!("Galaxy: {p}"));
@@ -227,7 +227,6 @@ fn expand_space(map: Map<Node>) -> Map<Node> {
     let mut ey = 0;
 
     for y in 0..map_expand_height {
-        ex = 0;
         if expand_rows.contains(&y) {
             ey += 1;
         }
@@ -245,6 +244,7 @@ fn expand_space(map: Map<Node>) -> Map<Node> {
                 }
             }
         }
+        ex = 0;
     }
 
     // flood all of the empty space with 'Space'
