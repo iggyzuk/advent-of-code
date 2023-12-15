@@ -105,6 +105,13 @@ name = "day-11-2023"
 version = "0.1.0"
 
 [[package]]
+name = "day-12-2023"
+version = "0.1.0"
+dependencies = [
+ "nom",
+]
+
+[[package]]
 name = "day-2-2015"
 version = "0.1.0"
 dependencies = [

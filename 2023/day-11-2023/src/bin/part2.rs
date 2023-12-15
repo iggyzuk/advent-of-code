@@ -97,9 +97,12 @@ enum Thing {
 }
 
 fn main() {
+    println!("Starting Process");
+    let now = std::time::Instant::now();
     let input = include_str!("../../input.txt");
     let output = process(input, 1_000_000);
-    println!("{output}");
+    println!("Finished in {:?}", now.elapsed());
+    println!("Solution: {:?}", output);
 }
 
 // 613_686_987_427
