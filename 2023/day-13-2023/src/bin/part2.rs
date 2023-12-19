@@ -134,7 +134,7 @@ fn find_reflection_index_with_smudge(mat: &DMatrix<State>) -> Option<usize> {
                 let mat1_view = mat.view((0, 0), (mat.nrows(), i + 1));
                 let mat2_view = mat.view((0, i + 1), (mat.nrows(), mat.ncols() - i - 1));
 
-                let mat1 = matrix_flip_rows(&mat1_view);
+                let mat1 = matrix_flip_rows(mat1_view);
 
                 if are_matrices_identical_min_size_with_smudge(&mat1, &mat2_view) {
                     return Some(i + 1);
@@ -172,21 +172,18 @@ fn are_matrices_identical_min_size_with_smudge(
     smudged
 }
 
-fn matrix_flip_rows(mat: &DMatrixView<State>) -> DMatrix<State> {
-    let mut data = vec![];
-    for row in mat.row_iter() {
-        for scalar in row.iter().rev() {
-            data.push(scalar.clone())
-        }
-    }
-    DMatrix::from_row_slice(mat.nrows(), mat.ncols(), data.as_slice())
+fn matrix_flip_rows(mat: DMatrixView<State>) -> DMatrix<State> {
+    let iter = mat
+        .row_iter()
+        .flat_map(|row| row.iter().rev().cloned().collect_vec());
+
+    DMatrix::from_row_iterator(mat.nrows(), mat.ncols(), iter)
 }
 
 fn matrix_rotate_left(mat: &DMatrix<State>) -> DMatrix<State> {
+    // switch rows and columns:
     // row-major: 1,2,3; 4,5,6; 7,8,9;
     // col-major: 3,2,1; 6,5,4; 9,8,7
-
-    // switch rows and columns
     let iter = mat
         .row_iter()
         .flat_map(|row| row.iter().rev().cloned().collect_vec());
