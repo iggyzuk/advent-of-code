@@ -47,6 +47,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "common"
+version = "0.1.0"
+
+[[package]]
 name = "console"
 version = "0.15.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -138,6 +142,9 @@ dependencies = [
 [[package]]
 name = "day-14-2023"
 version = "0.1.0"
+dependencies = [
+ "common",
+]
 
 [[package]]
 name = "day-2-2015"
