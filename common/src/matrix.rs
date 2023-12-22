@@ -100,6 +100,16 @@ impl<T: Clone> Matrix<&T> {
     }
 }
 
+impl<T: Clone> Matrix<T> {
+    pub fn empty(nrows: usize, ncols: usize, default: T) -> Self {
+        Self {
+            nrows,
+            ncols,
+            data: vec![default; nrows * ncols],
+        }
+    }
+}
+
 impl<T: Clone> Clone for Matrix<T> {
     fn clone(&self) -> Self {
         Self {
