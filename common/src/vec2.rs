@@ -3,7 +3,7 @@ use std::fmt::Display;
 /// Vector 2
 ///
 /// A vector with positive right and down components.
-#[derive(Clone, Copy, Hash, PartialEq, Eq, Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Vec2<T> {
     pub x: T,
     pub y: T,
@@ -11,12 +11,18 @@ pub struct Vec2<T> {
 
 impl<T> Vec2<T>
 where
-    T: std::ops::Neg<Output = T>,
     T: Clone + Copy,
 {
     pub fn new(x: T, y: T) -> Self {
         Self { x, y }
     }
+}
+
+impl<T> Vec2<T>
+where
+    T: std::ops::Neg<Output = T>,
+    T: Clone + Copy,
+{
     pub fn rotate_left(&mut self) {
         // ( 1,  0)
         // ( 0, -1)
@@ -68,6 +74,20 @@ where
         Self {
             x: self.x - rhs.x,
             y: self.y - rhs.y,
+        }
+    }
+}
+
+impl<T> std::ops::Mul for Vec2<T>
+where
+    T: std::ops::Mul<Output = T>,
+{
+    type Output = Vec2<T>;
+
+    fn mul(self, rhs: Self) -> Self::Output {
+        Self {
+            x: self.x * rhs.x,
+            y: self.y * rhs.y,
         }
     }
 }

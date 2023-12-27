@@ -281,7 +281,7 @@ fn keep_alive_when_first_energy_pass(beam: Beam, beams: &mut Vec<Beam>, matrix: 
     if let Some(cell) = matrix.get_mut_element_signed(beam.pos.y, beam.pos.x) {
         if !cell.energy.contains(&beam.dir) {
             cell.energy.insert(beam.dir);
-            beams.push(beam.clone());
+            beams.push(beam);
         }
     }
 }
