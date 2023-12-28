@@ -7,6 +7,24 @@ struct Instruction {
     color: String,
 }
 
+impl Instruction {
+    fn from(color: String) -> Self {
+        let dir = match color.chars().last().expect("should have a last char") {
+            '0' => Direction::Right,
+            '1' => Direction::Down,
+            '2' => Direction::Left,
+            '3' => Direction::Up,
+            _ => panic!("could not parse dir from last char in color"),
+        };
+
+        let step_hex = color.chars().take(5).collect::<String>();
+        let steps =
+            usize::from_str_radix(step_hex.as_str(), 16).expect("should parse steps from hex");
+
+        Self { dir, steps, color }
+    }
+}
+
 #[derive(Debug)]
 enum Direction {
     Right,
@@ -36,7 +54,7 @@ fn main() {
     println!("Solution: {:?}", output);
 }
 
-// 48_400
+// 72_811_019_847_283
 fn process(input: &str) -> usize {
     let (_, instructions) = parsing::parse(input).unwrap();
 
@@ -105,7 +123,7 @@ mod parsing {
                 terminated(map(u64, |n| n as usize), space1),
                 parse_color,
             )),
-            |(dir, steps, color)| Instruction { dir, steps, color },
+            |(_, _, color)| Instruction::from(color),
         )(input)
     }
 
@@ -148,6 +166,6 @@ R 2 (#7807d2)
 U 3 (#a77fa3)
 L 2 (#015232)
 U 2 (#7a21e3)";
-        assert_eq!(process(input), 62);
+        assert_eq!(process(input), 952408144115);
     }
 }
