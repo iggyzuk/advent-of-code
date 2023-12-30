@@ -151,7 +151,7 @@ mod parsing {
 mod tests {
     use super::*;
     #[test]
-    fn day18_2023_part1() {
+    fn day18_2023_part2() {
         let input = "R 6 (#70c710)
 D 5 (#0dc571)
 L 2 (#5713f0)
