@@ -15,7 +15,7 @@ struct Context {
 
 #[derive(Debug)]
 struct Workflow {
-    name: String,
+    name: String,             // qkq
     expressions: Expressions, // a < 2006 : qkq
     default: Action,          // Reject
 }
@@ -25,7 +25,7 @@ impl Display for Workflow {
         write!(f, "{} -> ", self.name)?;
         for ex in &self.expressions {
             write!(f, "{}", Into::<char>::into(&ex.rating))?;
-            write!(f, "{}", Into::<char>::into(&ex.rating))?;
+            write!(f, " {} ", Into::<char>::into(&ex.operator))?;
             write!(f, "{:?}", ex.value)?;
             write!(f, "={:?}", ex.action)?;
             write!(f, ",")?;
@@ -101,15 +101,24 @@ enum Action {
 struct Part {
     ratings: Vec<(Rating, usize)>,
 }
+
+impl Display for Part {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "Part {{ x: {}, m: {}, a: {}, s: {} }}",
+            &self.ratings[0].1, &self.ratings[1].1, &self.ratings[2].1, &self.ratings[3].1
+        )
+    }
+}
+
 impl Part {
     fn total(&self) -> usize {
         self.ratings.iter().map(|x| x.1).sum::<usize>()
     }
 }
 
-// 423929 too high
-// 318388 too low
-// 328526 too low
+// 332_145
 fn main() {
     println!("Starting Process");
     let now = std::time::Instant::now();
@@ -117,21 +126,20 @@ fn main() {
     let output = process(input);
     println!("Finished in {:?}", now.elapsed());
     println!("Solution: {:?}", output);
+    assert_eq!(output, 332145);
 }
 
 fn process(input: &str) -> usize {
     let (_, ctx) = parsing::parse(input).unwrap();
 
     for (_, x) in &ctx.workflows {
-        println!("{x}");
+        println!("{x:?}");
     }
-
-    let in_workflow = ctx.workflows.get("in").expect("should have 'in' workflow");
 
     ctx.parts
         .iter()
         .filter_map(|part| {
-            if is_part_accepted(&part, &in_workflow, &ctx.workflows) {
+            if check_part_acceptance(&part, &ctx.workflows) {
                 return Some(part.total());
             }
             None
@@ -139,10 +147,10 @@ fn process(input: &str) -> usize {
         .sum::<usize>()
 }
 
-fn is_part_accepted(part: &Part, workflow: &Workflow, workflows: &Workflows) -> bool {
-    let mut current_workflow = workflow;
+fn check_part_acceptance(part: &Part, workflows: &Workflows) -> bool {
+    let mut current_workflow = workflows.get("in").expect("should have 'in' workflow");
     loop {
-        match run_part_through_workflow(part, current_workflow) {
+        match run_part_through_workflow(current_workflow, part) {
             Action::Accept => return true,
             Action::Reject => return false,
             Action::GoTo(next_workflow_name) => {
@@ -155,33 +163,27 @@ fn is_part_accepted(part: &Part, workflow: &Workflow, workflows: &Workflows) -> 
     }
 }
 
-fn run_part_through_workflow(part: &Part, workflow: &Workflow) -> Action {
-    // For every part's rating run it through the matching expression,
-    // if it's successful return the action, otherwise try the other ratings.
-    for (rating, value) in &part.ratings {
-        // Sometimes there are duplicates – cbp{m>3589:R,x<3159:A,x>3716:R,A}
-        let expressions = workflow.expressions.iter().filter(|x| x.rating == *rating);
-        for expr in expressions {
-            println!(
-                "{} --- {:?} = {} {} {} -> {:?}",
-                workflow.name,
-                rating,
-                value,
-                Into::<char>::into(&expr.operator),
-                expr.value,
-                expr.action
-            );
-            // Return the first successful expression.
-            if let Some(action) = run_expression(*value, expr) {
-                return action;
-            }
+fn run_part_through_workflow(workflow: &Workflow, part: &Part) -> Action {
+    // For every part's rating run it through the matching expressions,
+    // return the first successful action.
+    for ex in &workflow.expressions {
+        let value = part
+            .ratings
+            .iter()
+            .find(|x| x.0 == ex.rating)
+            .expect("part should have all xmas values")
+            .1;
+
+        // Return the first successful expression.
+        if let Some(action) = evaluate(ex, value) {
+            return action;
         }
     }
     // When all else fails just return the default action.
     workflow.default.clone()
 }
 
-fn run_expression(value: usize, expr: &Expression) -> Option<Action> {
+fn evaluate(expr: &Expression, value: usize) -> Option<Action> {
     if match expr.operator {
         Operator::LessThan => value < expr.value,
         Operator::GreaterThan => value > expr.value,
